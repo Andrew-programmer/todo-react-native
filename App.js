@@ -4,43 +4,43 @@ import {Header} from "./components/Header";
 import {useState} from "react";
 import {TaskList} from "./components/TaskList";
 import {Form} from "./components/Form";
+import {Guide} from "./components/Guide";
 
-const initState = [
-    {
-        title: 'Task1',
-        completed: false,
-        index: 1
-    },
-    {
-        title: 'Task2',
-        completed: false,
-        index: 2
-    },
-    {
-        title: 'Task3',
-        completed: false,
-        index: 3
-    },
-]
+const initState = [];
 
 export default function App() {
     const [tasks, setTasks] = useState(initState);
 
-    const calculateIndex = () => {
-        return tasks[tasks.length - 1].index + 1;
+    const calculateKey = () => {
+        return Math.random().toString(36).substring(7);
+    }
+
+    const handleListItemPress = (key) => {
+        setTasks(tasks.map(task => {
+            if (task.key === key) {
+                task.completed = !task.completed;
+            }
+
+            return task;
+        }))
+    }
+
+    const checkCompleted = () => {
+        return tasks.find(task => task.completed)
     }
 
     const addTask = (title) => {
         if (!title || !title.trim()) {
             return;
         }
+
         setTasks(prevState => {
             return [
                 ...tasks,
                 {
                     title,
                     completed: false,
-                    index: calculateIndex()
+                    key: calculateKey()
                 }
             ]
         });
@@ -48,11 +48,38 @@ export default function App() {
         return true;
     }
 
+    const deleteTask = (key) => {
+        const currentTask = tasks.find(task => task.key === key);
+        if (currentTask.completed) {
+            setTasks(tasks.filter(task => task.key !== key));
+        }
+    }
+
+    const deleteAllCompleted = () => {
+        setTasks(tasks.filter(task => !task.completed))
+    }
+
+    const sortCompleted = () => {
+        const sortedTasks = tasks.sort((currentTask, nextTask) => {
+            return currentTask.completed - nextTask.completed
+        })
+
+        setTasks([
+            ...sortedTasks
+        ]);
+    }
+
     return (
         <SafeAreaView style={styles.main}>
-            <Header/>
-            <View>
-                <TaskList taskList={tasks}/>
+            <Header checkCompleted={checkCompleted} deleteAllCompleted={deleteAllCompleted}
+                    sortCompleted={sortCompleted}/>
+            <View style={styles.mainView}>
+                {
+                    tasks.length ?
+                        <TaskList taskList={tasks} handleTaskPress={handleListItemPress} deleteTask={deleteTask}/>
+                        :
+                        <Guide/>
+                }
             </View>
             <Form onSubmit={addTask}/>
         </SafeAreaView>
@@ -68,6 +95,14 @@ const styles = StyleSheet.create({
         alignItems: "stretch",
         height: '100%',
     },
+    mainView: {
+        padding: 10,
+        height: '100%',
+        width: '100%',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center"
+    }
 });
 
 

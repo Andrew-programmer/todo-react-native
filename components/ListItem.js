@@ -1,19 +1,29 @@
-import {StyleSheet, Text, TouchableHighlight} from "react-native";
+import {StyleSheet, Text, TouchableHighlight, TouchableOpacity, View} from "react-native";
 
-export const ListItem = ({el, children}) => {
+export const ListItem = ({el, handlePress, deleteTask}) => {
+    const setCompletedStyles = (isCompleted) => {
+        return isCompleted ? styles.completedText : undefined;
+    }
+
     return (
-        <TouchableHighlight style={styles.textContainer}>
-            <Text style={styles.text}>{children}</Text>
-        </TouchableHighlight>
+        <TouchableOpacity
+            style={styles.textContainer}
+            onPress={() => handlePress(el.key)}
+            onLongPress={() => deleteTask(el.key)}
+        >
+            <Text style={[styles.text, setCompletedStyles(el.completed)]}>{el.title}</Text>
+        </TouchableOpacity>
     );
 }
 
 const styles = StyleSheet.create({
     textContainer: {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        overflow: 'hidden',
     },
     text: {
         padding: 20,
@@ -23,5 +33,9 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         marginTop: 20,
         width: '60%',
+    },
+    completedText: {
+        textDecorationLine: 'line-through',
+        backgroundColor: '#b0b0b0'
     }
 })

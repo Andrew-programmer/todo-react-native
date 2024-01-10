@@ -1,11 +1,20 @@
 import {SafeAreaView} from "react-native-safe-area-context";
-import {StyleSheet, TouchableHighlight, Text} from "react-native";
+import {StyleSheet, TouchableHighlight, Text, Button, View} from "react-native";
 
-export const Header = () => {
+export const Header = ({checkCompleted, deleteAllCompleted, sortCompleted}) => {
+    const setDisabled = () => {
+        return !checkCompleted();
+    }
+
     return (
-        <TouchableHighlight style={styles.main}>
+        <View style={styles.main}>
             <Text style={styles.text}>TASK LIST</Text>
-        </TouchableHighlight>
+            <View style={styles.buttonContainer}>
+                <Button title={'Delete all completed'} color={'red'} disabled={setDisabled()}
+                        onPress={deleteAllCompleted}/>
+                <Button title={'Sort'} onPress={() => sortCompleted()}/>
+            </View>
+        </View>
     );
 }
 
@@ -15,7 +24,7 @@ const styles = StyleSheet.create({
         paddingBottom: 15,
         width: '100%',
         display: 'flex',
-        flexDirection: 'row',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -25,6 +34,17 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         textAlign: 'center',
         backgroundColor: 'silver',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
+    buttonContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        width: '70%'
+    },
+    deleteButton: {
+        marginTop: 10
     }
 });
